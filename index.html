@@ -4,142 +4,245 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Meal Tracker</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #f8f9fa, #e0eafc);
-      background-repeat: no-repeat;
-      min-height: 100vh;
+    * {
+      box-sizing: border-box;
     }
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-      margin-top: 2rem;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6fa;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      background: #1abc9c;
+      color: white;
+      padding: 20px 10px;
     }
 
     h1 {
-      text-align: center;
-      color: #1e3c72;
+      margin: 0;
+      font-size: 2rem;
     }
 
-    label, select, input, button {
-      display: block;
-      margin: 1rem auto;
-      width: 90%;
+    p {
+      margin-top: 5px;
+      font-size: 1rem;
     }
 
-    button {
-      background-color: #1e90ff;
+    main#tracker {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .day-section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .day-section h2 {
+      margin-top: 0;
+      color: #16a085;
+    }
+
+    .meal-inputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .meal-inputs input,
+    .meal-inputs select {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      min-width: 130px;
+    }
+
+    .meal-inputs button {
+      background: #1abc9c;
       color: white;
-      padding: 0.7rem;
       border: none;
-      border-radius: 5px;
+      padding: 10px 16px;
+      border-radius: 8px;
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #0066cc;
+    .meal-inputs button:hover {
+      background: #16a085;
     }
 
-    .log {
-      margin-top: 1rem;
-      border-top: 1px solid #ccc;
-      padding-top: 1rem;
+    .meal-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 10px;
     }
 
-    .entry {
-      background: #f0f8ff;
-      margin-bottom: 0.5rem;
-      padding: 0.5rem;
-      border-left: 4px solid #1e90ff;
-      border-radius: 5px;
+    .meal-list li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
     }
 
-    .download-btn {
-      background-color: green;
-      margin-top: 1rem;
+    .total-cost {
+      font-weight: bold;
+      margin-top: 10px;
+      color: #e67e22;
     }
 
-    footer {
+    #pdf-note {
+      display: block;
+      width: 90%;
+      max-width: 800px;
+      margin: 20px auto 10px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .actions {
       text-align: center;
-      font-size: 0.9rem;
-      margin-top: 2rem;
-      color: #777;
+      margin: 30px 0 40px;
+    }
+
+    .actions button {
+      margin: 0 10px;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+
+    .actions button:hover {
+      background: #2980b9;
+    }
+
+    @media (max-width: 768px) {
+      .meal-inputs {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Meal Tracker 🍽️</h1>
-    <label for="day">Day of the Week</label>
-    <select id="day">
-      <option value="Monday">Monday</option>
-      <option value="Tuesday">Tuesday</option>
-      <option value="Wednesday">Wednesday</option>
-      <option value="Thursday">Thursday</option>
-      <option value="Friday">Friday</option>
-      <option value="Saturday">Saturday</option>
-      <option value="Sunday">Sunday</option>
-    </select>
 
-    <label for="meal">Meal</label>
-    <select id="meal">
-      <option value="Breakfast">Breakfast</option>
-      <option value="Lunch">Lunch</option>
-      <option value="Mid-Afternoon">Mid-Afternoon</option>
-      <option value="Supper">Supper</option>
-    </select>
+  <header>
+    <h1>🍽️ Weekly Meal Tracker</h1>
+    <p>Click "Next Day" to add a day below. You can export anytime.</p>
+  </header>
 
-    <label for="cost">Cost (Ksh)</label>
-    <input type="number" id="cost" placeholder="Enter cost..." />
+  <main id="tracker"></main>
 
-    <button onclick="addMeal()">Add Meal</button>
-    <button class="download-btn" onclick="downloadPDF()">Download PDF Report</button>
+  <input type="text" id="pdf-note" placeholder="Optional note or title for your PDF (e.g., Carl's Weekly Meals)" />
 
-    <div class="log" id="logContainer"></div>
-    <footer>© 2025 Serious Meals 😄</footer>
+  <div class="actions">
+    <button onclick="addNextDay()">➕ Next Day</button>
+    <button onclick="exportToPDF()">📄 Export to PDF</button>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
-    const logs = [];
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    let currentDayIndex = 0;
 
-    function addMeal() {
-      const day = document.getElementById('day').value;
-      const meal = document.getElementById('meal').value;
-      const cost = document.getElementById('cost').value;
-      const time = new Date().toLocaleTimeString();
-
-      if (!cost) {
-        alert("Please enter the cost.");
+    function addNextDay() {
+      if (currentDayIndex >= days.length) {
+        alert("You've added all 7 days!");
         return;
       }
 
-      const entry = { day, meal, cost, time };
-      logs.push(entry);
-      displayLogs();
+      const tracker = document.getElementById("tracker");
+      const day = days[currentDayIndex];
+      const section = document.createElement("section");
+      section.className = "day-section";
+      section.innerHTML = `
+        <h2>${day}</h2>
+        <div class="meal-inputs">
+          <select class="meal-type">
+            <option value="">Select Meal</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Mid-Afternoon">Mid-Afternoon</option>
+            <option value="Supper">Supper</option>
+          </select>
+          <input type="text" placeholder="Meal name" class="meal-name" />
+          <input type="number" placeholder="Cost (Ksh)" class="meal-cost" />
+          <button onclick="addMeal(this)">Add Meal</button>
+        </div>
+        <ul class="meal-list"></ul>
+        <p class="total-cost">Total: Ksh 0</p>
+      `;
+      tracker.appendChild(section);
+      currentDayIndex++;
     }
 
-    function displayLogs() {
-      const logContainer = document.getElementById('logContainer');
-      logContainer.innerHTML = '';
+    function addMeal(button) {
+      const section = button.closest("section");
+      const type = section.querySelector(".meal-type").value;
+      const name = section.querySelector(".meal-name").value;
+      const cost = parseFloat(section.querySelector(".meal-cost").value);
 
-      logs.forEach((entry, index) => {
-        logContainer.innerHTML += `
-          <div class="entry">
-            <strong>${entry.day}</strong> - ${entry.meal} @ Ksh ${entry.cost} 
-            <br><small>Time: ${entry.time}</small>
-          </div>`;
+      if (!type || !name || isNaN(cost)) {
+        alert("Fill in all fields correctly!");
+        return;
+      }
+
+      const li = document.createElement("li");
+      li.textContent = `${type}: ${name} - Ksh ${cost}`;
+      section.querySelector(".meal-list").appendChild(li);
+
+      section.querySelector(".meal-name").value = "";
+      section.querySelector(".meal-cost").value = "";
+
+      updateTotal(section);
+    }
+
+    function updateTotal(section) {
+      let total = 0;
+      section.querySelectorAll("li").forEach(li => {
+        const cost = parseFloat(li.textContent.split("Ksh ")[1]);
+        if (!isNaN(cost)) total += cost;
       });
+      section.querySelector(".total-cost").textContent = `Total: Ksh ${total}`;
     }
 
-    async function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+    function exportToPDF() {
+      const tracker = document.getElementById("tracker");
+      const note = document.getElementById("pdf-note").value;
+      const timeNow = new Date().toLocaleString();
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = `
+        <div style="text-align:center; font-size:18px; margin-bottom:10px;">
+          <strong>${note || 'Meal Report'}</strong><br/>
+          <em>${timeNow}</em>
+        </div>
+      `;
+      wrapper.appendChild(tracker.cloneNode(true));
+
+      html2pdf().set({
+        margin: 0.5,
+        filename: `meal-log-${Date.now()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      }).from(wrapper).save();
+    }
+  </script>
+
+</body>
+</html>
