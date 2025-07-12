@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Meal Tracker 🍽️ + Export + Clock</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 480px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #f0f8ff;
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+    }
+
+    h2, #clock {
+      text-align: center;
+    }
+
+    #clock {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .secondary { background-color: #007bff; }
+    .secondary:hover { background-color: #0069d9; }
+
+    .export { background-color: #6c757d; }
+    .export:hover { background-color: #5a6268; }
+
+    .danger { background-color: #dc3545; }
+    .danger:hover { background-color: #c82333; }
+
+    #output, #motivation, #final, #saved, #warning {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    #warning { color: red; }
+
+    #log {
+      background: #ffffff;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #444;
+      white-space: pre-line;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Meal Tracker 🍽️</h2>
+  <div id="clock">🕒 Loading time...</div>
+
+  <label><input type="checkbox" id="morning"> Morning (20)</label>
+  <label><input type="checkbox" id="mid"> Mid-Afternoon (20)</label>
+  <p>Lunch (30 or 50) and Supper (40) are always included.</p>
+
+  <button onclick="calculateMeal()">Add Meal</button>
+  <button class="secondary" onclick="finishDay()">Finish Day</button>
+  <button class="export" onclick="downloadTxt()">Download as .txt</button>
+  <button class="export" onclick="downloadPdf()">Download as PDF</button>
+  <button class="danger" onclick="clearLog()">Clear / Reset Day</button>
+
+  <div id="output"></div>
+  <div id="motivation"></div>
+  <div id="warning"></div>
+  <div id="log"></div>
+  <div id="final"></div>
+  <div id="saved"></div>
+
+  <script>
+    const morningCheckbox = document.getElementById("morning");
+    const midCheckbox = document.getElementById("mid");
+    const log = [];
+    const MAX_PER_ENTRY = 110;
+
+    morningCheckbox.addEventListener("change", () => {
+      if (morningCheckbox.checked) {
+        midCheckbox.checked = false;
+        midCheckbox.disabled = true;
+      } else {
+        midCheckbox.disabled = false;
+      }
+    });
+
+    function calculateMeal() {
+      if (log.length >= 50) {
+        document.getElementById("warning").innerText =
+          "⚠️ Too many entries! Consider exporting or clearing the log.";
+        return;
+      } else {
+        document.getElementById("warning").innerText = "";
+      }
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+      const morning = morningCheckbox.checked;
+      const mid = midCheckbox.checked && !morning;
+      const lunchCost = (!morning && !mid) ? 50 : 30;
+      const supperCost = 40;
+
+      const morningCost = morning ? 20 : 0;
+      const midCost = mid ? 20 : 0;
+      const total = morningCost + midCost + lunchCost + supperCost;
+
+      log.push({
+        date: dateStr,
+        morning,
+        mid,
+        lunchCost,
+        supperCost,
+        total
+      });
+
+      document.getElementById("output").innerText = `Meal Total: ${total}`;
+      document.getElementById("motivation").innerText = getMotivation();
+
+      morningCheckbox.checked = false;
+      midCheckbox.checked = false;
+      midCheckbox.disabled = false;
+    }
+
+    function finishDay() {
+      let dayTotal = 0;
+      let fullLog = "";
+
+      log.forEach((entry, i) => {
+        fullLog += `📝 Entry ${i + 1} — ${entry.date}:\n`;
+        fullLog += `- Morning: ${entry.morning ? "✅ Yes (20)" : "❌ No"}\n`;
+        fullLog += `- Mid-Afternoon: ${entry.mid ? "✅ Yes (20)" : "❌ No"}\n`;
+        fullLog += `- Lunch: ✅ Yes (${entry.lunchCost})\n`;
+        fullLog += `- Supper: ✅ Yes (${entry.supperCost})\n`;
+        fullLog += `→ Subtotal: ${entry.total}\n\n`;
+        dayTotal += entry.total;
+      });
+
+      const maxTotal = log.length * MAX_PER_ENTRY;
+      const saved = maxTotal - dayTotal;
+
+      document.getElementById("log").innerText = fullLog.trim();
+      document.getElementById("final").innerText = `🔥 Final Total for the Day: ${dayTotal} / ${maxTotal}`;
+      document.getElementById("saved").innerText = `💸 You saved: ${saved} today! Great discipline!`;
+    }
+
+    function clearLog() {
+      log.length = 0;
+      document.getElementById("log").innerText = "";
+      document.getElementById("final").innerText = "";
+      document.getElementById("saved").innerText = "";
+      document.getElementById("output").innerText = "";
+      document.getElementById("motivation").innerText = "";
+      document.getElementById("warning").innerText = "";
+      morningCheckbox.checked = false;
+      midCheckbox.checked = false;
+      midCheckbox.disabled = false;
+      alert("Day reset! Start fresh 🚿");
+    }
+
+    function downloadTxt() {
+      let content = "";
+      log.forEach((entry, i) => {
+        content += `Entry ${i + 1} — ${entry.date}:\n`;
+        content += `Morning: ${entry.morning ? "Yes (20)" : "No"}\n`;
+        content += `Mid-Afternoon: ${entry.mid ? "Yes (20)" : "No"}\n`;
+        content += `Lunch: ${entry.lunchCost}\n`;
+        content += `Supper: ${entry.supperCost}\n`;
+        content += `Subtotal: ${entry.total}\n\n`;
+      });
+
+      const blob = new Blob([content], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "meal-log.txt";
+      a.click();
+    }
+
+    async function downloadPdf() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 10;
+
+      log.forEach((entry, i) => {
+        doc.text(`Entry ${i + 1} — ${entry.date}`, 10, y);
+        y += 6;
+        doc.text(`Morning: ${entry.morning ? "Yes (20)" : "No"}`, 10, y);
+        y += 6;
+        doc.text(`Mid-Afternoon: ${entry.mid ? "Yes (20)" : "No"}`, 10, y);
+        y += 6;
+        doc.text(`Lunch: ${entry.lunchCost}`, 10, y);
+        y += 6;
+        doc.text(`Supper: ${entry.supperCost}`, 10, y);
+        y += 6;
+        doc.text(`Subtotal: ${entry.total}`, 10, y);
+        y += 10;
+
+        if (y > 270) {
+          doc.addPage();
+          y = 10;
+        }
+      });
+
+      doc.save("meal-log.pdf");
+    }
+
+    function getMotivation() {
+      const messages = [
+        "You're tracking like a pro! 💯",
+        "Discipline is power. Keep it going! 👊",
+        "Well done! One step closer to your goals 🚀",
+        "You’re mastering consistency! 🧠",
+        "Strong day! Proud of you! 🔥"
+      ];
+      return messages[Math.floor(Math.random() * messages.length)];
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString();
+      document.getElementById("clock").innerText = `🕒 ${timeStr}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
