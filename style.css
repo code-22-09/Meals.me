@@ -1,86 +1,93 @@
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to right, #d7e1ec, #f8f8f8);
+  background: #f5f7fb;
   margin: 0;
-  padding: 0;
+  padding: 20px;
+  color: #333;
 }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 30px;
-  background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  margin-top: 30px;
+header {
+  text-align: center;
   margin-bottom: 30px;
 }
 
 h1 {
-  text-align: center;
-  color: #2c3e50;
   font-size: 2em;
-  margin-bottom: 20px;
-}
-
-button {
-  background-color: #4caf50;
-  border: none;
-  color: white;
-  padding: 10px 18px;
-  margin: 10px 5px;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background-color: #388e3c;
+  color: #2c3e50;
 }
 
 .day-section {
-  margin-top: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
   padding: 20px;
-  background: #e8f5e9;
-  border-left: 6px solid #4caf50;
-  border-radius: 8px;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .day-section h2 {
   margin-top: 0;
-  color: #333;
+  color: #1abc9c;
 }
 
-.meal-entry {
+.meal-inputs {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-label {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-input, select {
+.meal-inputs input,
+.meal-inputs select {
   padding: 8px;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 120px;
 }
 
-#totalCost {
-  text-align: center;
-  font-size: 18px;
-  margin-top: 30px;
+.meal-inputs button {
+  background: #1abc9c;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.meal-inputs button:hover {
+  background: #16a085;
+}
+
+.meal-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.meal-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.total-cost {
   font-weight: bold;
-  color: #2e7d32;
+  color: #e67e22;
+  margin-top: 10px;
 }
 
-@media print {
-  button {
-    display: none;
-  }
+button#export {
+  display: block;
+  margin: 30px auto 0;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button#export:hover {
+  background: #c0392b;
 }
