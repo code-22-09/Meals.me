@@ -1,54 +1,64 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f1f1f1;
   margin: 0;
   padding: 0;
+  background: #f0f0f0;
 }
 
 .container {
-  max-width: 500px;
+  max-width: 900px;
   margin: auto;
+  padding: 20px;
   background: #fff;
-  padding: 1em;
-  margin-top: 2em;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #ccc;
+  min-height: 100vh;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 h1 {
   text-align: center;
-}
-
-.date-time {
-  text-align: center;
-  margin-bottom: 10px;
-  color: #555;
-}
-
-form label {
-  display: block;
-  margin: 10px 0;
-}
-
-.day-selector {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 1em 0;
-  gap: 1em;
-  font-weight: bold;
+  margin-bottom: 20px;
 }
 
 button {
   margin: 10px 5px;
-  padding: 10px;
-  background: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: bold;
   cursor: pointer;
 }
 
-button:hover {
-  background: #388e3c;
+.day-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: #e8f5e9;
+  border-left: 5px solid #4caf50;
+}
+
+.day-section h2 {
+  margin-top: 0;
+}
+
+.meal-entry {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input, select {
+  padding: 6px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.meal-confirmation {
+  margin-top: 10px;
+}
+
+@media print {
+  button {
+    display: none;
+  }
 }
