@@ -1,0 +1,93 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f7fb;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h1 {
+  font-size: 2em;
+  color: #2c3e50;
+}
+
+.day-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.day-section h2 {
+  margin-top: 0;
+  color: #1abc9c;
+}
+
+.meal-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.meal-inputs input,
+.meal-inputs select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.meal-inputs button {
+  background: #1abc9c;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.meal-inputs button:hover {
+  background: #16a085;
+}
+
+.meal-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.meal-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.total-cost {
+  font-weight: bold;
+  color: #e67e22;
+  margin-top: 10px;
+}
+
+button#export {
+  display: block;
+  margin: 30px auto 0;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button#export:hover {
+  background: #c0392b;
+}
