@@ -1,86 +1,123 @@
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-let currentDayIndex = 0;
-
-function addNextDay() {
-  if (currentDayIndex >= days.length) {
-    alert("You've added all 7 days!");
-    return;
-  }
-
-  const tracker = document.getElementById("tracker");
-  const day = days[currentDayIndex];
-  const section = document.createElement("section");
-  section.className = "day-section";
-  section.innerHTML = `
-    <h2>${day}</h2>
-    <div class="meal-inputs">
-      <select class="meal-type">
-        <option value="">Select Meal</option>
-        <option value="Breakfast">Breakfast</option>
-        <option value="Lunch">Lunch</option>
-        <option value="Mid-Afternoon">Mid-Afternoon</option>
-        <option value="Supper">Supper</option>
-      </select>
-      <input type="text" placeholder="Meal name" class="meal-name" />
-      <input type="number" placeholder="Cost (Ksh)" class="meal-cost" />
-      <button onclick="addMeal(this)">Add Meal</button>
-    </div>
-    <ul class="meal-list"></ul>
-    <p class="total-cost">Total: Ksh 0</p>
-  `;
-  tracker.appendChild(section);
-  currentDayIndex++;
+/* General styles */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f6fa;
+  color: #333;
 }
 
-function addMeal(button) {
-  const section = button.closest("section");
-  const type = section.querySelector(".meal-type").value;
-  const name = section.querySelector(".meal-name").value;
-  const cost = parseFloat(section.querySelector(".meal-cost").value);
-
-  if (!type || !name || isNaN(cost)) {
-    alert("Fill in all fields correctly!");
-    return;
-  }
-
-  const li = document.createElement("li");
-  li.textContent = `${type}: ${name} - Ksh ${cost}`;
-  section.querySelector(".meal-list").appendChild(li);
-
-  section.querySelector(".meal-name").value = "";
-  section.querySelector(".meal-cost").value = "";
-
-  updateTotal(section);
+header {
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+  padding: 20px 10px;
 }
 
-function updateTotal(section) {
-  let total = 0;
-  section.querySelectorAll("li").forEach(li => {
-    const cost = parseFloat(li.textContent.split("Ksh ")[1]);
-    if (!isNaN(cost)) total += cost;
-  });
-  section.querySelector(".total-cost").textContent = `Total: Ksh ${total}`;
+h1 {
+  margin: 0;
+  font-size: 2rem;
 }
 
-function exportToPDF() {
-  const tracker = document.getElementById("tracker");
-  const note = document.getElementById("pdf-note").value;
-  const timeNow = new Date().toLocaleString();
+p {
+  margin-top: 5px;
+  font-size: 1rem;
+}
 
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = `
-    <div style="text-align:center; font-size:18px; margin-bottom:10px;">
-      <strong>${note || 'Meal Report'}</strong><br/>
-      <em>${timeNow}</em>
-    </div>
-  `;
-  wrapper.appendChild(tracker.cloneNode(true));
+main#tracker {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
 
-  html2pdf().set({
-    margin: 0.5,
-    filename: `meal-log-${Date.now()}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  }).from(wrapper).save();
+.day-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.day-section h2 {
+  margin-top: 0;
+  color: #16a085;
+}
+
+/* Inputs */
+.meal-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.meal-inputs input,
+.meal-inputs select {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  min-width: 130px;
+}
+
+.meal-inputs button {
+  background: #1abc9c;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.meal-inputs button:hover {
+  background: #16a085;
+}
+
+.meal-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.meal-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.total-cost {
+  font-weight: bold;
+  margin-top: 10px;
+  color: #e67e22;
+}
+
+/* Action buttons */
+.actions {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.actions button {
+  margin: 0 10px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: #3498db;
+  color: white;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background: #2980b9;
+}
+
+#pdf-note {
+  display: block;
+  width: 90%;
+  max-width: 800px;
+  margin: 10px auto;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
 }
