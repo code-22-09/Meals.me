@@ -1,6 +1,14 @@
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+let currentDayIndex = 0;
 
-function createDaySection(day) {
+function addNextDay() {
+  if (currentDayIndex >= days.length) {
+    alert("You've added all 7 days!");
+    return;
+  }
+
+  const tracker = document.getElementById("tracker");
+  const day = days[currentDayIndex];
   const section = document.createElement("section");
   section.className = "day-section";
   section.innerHTML = `
@@ -20,22 +28,23 @@ function createDaySection(day) {
     <ul class="meal-list"></ul>
     <p class="total-cost">Total: Ksh 0</p>
   `;
-  return section;
+  tracker.appendChild(section);
+  currentDayIndex++;
 }
 
 function addMeal(button) {
   const section = button.closest("section");
-  const mealType = section.querySelector(".meal-type").value;
-  const mealName = section.querySelector(".meal-name").value;
-  const mealCost = parseFloat(section.querySelector(".meal-cost").value);
+  const type = section.querySelector(".meal-type").value;
+  const name = section.querySelector(".meal-name").value;
+  const cost = parseFloat(section.querySelector(".meal-cost").value);
 
-  if (!mealType || !mealName || isNaN(mealCost)) {
+  if (!type || !name || isNaN(cost)) {
     alert("Fill in all fields correctly!");
     return;
   }
 
   const li = document.createElement("li");
-  li.textContent = `${mealType}: ${mealName} - Ksh ${mealCost}`;
+  li.textContent = `${type}: ${name} - Ksh ${cost}`;
   section.querySelector(".meal-list").appendChild(li);
 
   section.querySelector(".meal-name").value = "";
@@ -46,7 +55,7 @@ function addMeal(button) {
 
 function updateTotal(section) {
   let total = 0;
-  section.querySelectorAll(".meal-list li").forEach(li => {
+  section.querySelectorAll("li").forEach(li => {
     const cost = parseFloat(li.textContent.split("Ksh ")[1]);
     if (!isNaN(cost)) total += cost;
   });
@@ -54,22 +63,24 @@ function updateTotal(section) {
 }
 
 function exportToPDF() {
-  const element = document.getElementById("tracker");
-  const currentTime = new Date().toLocaleString();
-  const opt = {
+  const tracker = document.getElementById("tracker");
+  const note = document.getElementById("pdf-note").value;
+  const timeNow = new Date().toLocaleString();
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+    <div style="text-align:center; font-size:18px; margin-bottom:10px;">
+      <strong>${note || 'Meal Report'}</strong><br/>
+      <em>${timeNow}</em>
+    </div>
+  `;
+  wrapper.appendChild(tracker.cloneNode(true));
+
+  html2pdf().set({
     margin: 0.5,
-    filename: `meal-log-${currentTime.replace(/[/,: ]/g, "_")}.pdf`,
+    filename: `meal-log-${Date.now()}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(element).save();
+  }).from(wrapper).save();
 }
-
-// Init
-window.onload = () => {
-  const tracker = document.getElementById("tracker");
-  daysOfWeek.forEach(day => {
-    tracker.appendChild(createDaySection(day));
-  });
-};
