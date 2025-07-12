@@ -4,17 +4,166 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Meal Tracker</title>
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #f8f9fa, #e0eafc);
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      margin-top: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3c72;
+    }
+
+    label, select, input, button {
+      display: block;
+      margin: 1rem auto;
+      width: 90%;
+    }
+
+    button {
+      background-color: #1e90ff;
+      color: white;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0066cc;
+    }
+
+    .log {
+      margin-top: 1rem;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+    }
+
+    .entry {
+      background: #f0f8ff;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border-left: 4px solid #1e90ff;
+      border-radius: 5px;
+    }
+
+    .download-btn {
+      background-color: green;
+      margin-top: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      color: #777;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>My Weekly Meal Tracker</h1>
-    <button id="addDayBtn">➕ Add Next Day</button>
-    <button id="exportBtn">📄 Export PDF</button>
-    <div id="daysContainer"></div>
+    <h1>Meal Tracker 🍽️</h1>
+    <label for="day">Day of the Week</label>
+    <select id="day">
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+
+    <label for="meal">Meal</label>
+    <select id="meal">
+      <option value="Breakfast">Breakfast</option>
+      <option value="Lunch">Lunch</option>
+      <option value="Mid-Afternoon">Mid-Afternoon</option>
+      <option value="Supper">Supper</option>
+    </select>
+
+    <label for="cost">Cost (Ksh)</label>
+    <input type="number" id="cost" placeholder="Enter cost..." />
+
+    <button onclick="addMeal()">Add Meal</button>
+    <button class="download-btn" onclick="downloadPDF()">Download PDF Report</button>
+
+    <div class="log" id="logContainer"></div>
+    <footer>© 2025 Serious Meals 😄</footer>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const logs = [];
+
+    function addMeal() {
+      const day = document.getElementById('day').value;
+      const meal = document.getElementById('meal').value;
+      const cost = document.getElementById('cost').value;
+      const time = new Date().toLocaleTimeString();
+
+      if (!cost) {
+        alert("Please enter the cost.");
+        return;
+      }
+
+      const entry = { day, meal, cost, time };
+      logs.push(entry);
+      displayLogs();
+    }
+
+    function displayLogs() {
+      const logContainer = document.getElementById('logContainer');
+      logContainer.innerHTML = '';
+
+      logs.forEach((entry, index) => {
+        logContainer.innerHTML += `
+          <div class="entry">
+            <strong>${entry.day}</strong> - ${entry.meal} @ Ksh ${entry.cost} 
+            <br><small>Time: ${entry.time}</small>
+          </div>`;
+      });
+    }
+
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.text("Weekly Meal Report", 20, 20);
+      doc.setFontSize(12);
+      let y = 30;
+
+      let total = 0;
+
+      logs.forEach((entry, i) => {
+        const line = `${i + 1}. ${entry.day} - ${entry.meal} | Ksh ${entry.cost} | Time: ${entry.time}`;
+        doc.text(line, 20, y);
+        y += 10;
+        total += parseFloat(entry.cost);
+      });
+
+      doc.text(`Total Cost: Ksh ${total}`, 20, y + 10);
+      const filename = `Meal_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      // Save with Chrome download prompt
+      doc.save(filename);
+    }
+  </script>
 </body>
 </html>
