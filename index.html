@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meal Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🥗 My Meal Tracker</h1>
+    <div class="date-time" id="dateTime"></div>
+
+    <div class="day-selector">
+      <button onclick="switchDay(-1)">⬅️</button>
+      <span id="currentDay">Monday</span>
+      <button onclick="switchDay(1)">➡️</button>
+    </div>
+
+    <form id="mealForm">
+      <label><input type="checkbox" name="morning"> Morning</label>
+      <label><input type="checkbox" name="lunch"> Lunch ✅</label>
+      <label><input type="checkbox" name="mid"> Mid-Afternoon</label>
+      <label><input type="checkbox" name="supper"> Supper ✅</label>
+    </form>
+
+    <button onclick="saveMeals()">💾 Save</button>
+    <button onclick="exportMeals()">📤 Export Week</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
