@@ -1,71 +1,55 @@
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 let currentDayIndex = 0;
 
-document.addEventListener("DOMContentLoaded", () => {
-  showDateTime();
-  loadMeals();
-  setInterval(showDateTime, 1000);
+document.getElementById("addDayBtn").addEventListener("click", () => {
+  if (currentDayIndex < daysOfWeek.length) {
+    addDaySection(daysOfWeek[currentDayIndex]);
+    currentDayIndex++;
+  } else {
+    alert("All 7 days already added!");
+  }
 });
 
-function showDateTime() {
-  const now = new Date();
-  const dateTime = now.toLocaleString();
-  document.getElementById("dateTime").textContent = dateTime;
-}
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const element = document.querySelector(".container");
+  html2pdf().from(element).save(`meal_log_${new Date().toISOString()}.pdf`);
+});
 
-function switchDay(offset) {
-  currentDayIndex = (currentDayIndex + offset + 7) % 7;
-  document.getElementById("currentDay").textContent = days[currentDayIndex];
-  loadMeals();
-}
+function addDaySection(dayName) {
+  const container = document.getElementById("daysContainer");
 
-function saveMeals() {
-  const form = document.getElementById("mealForm");
-  const meals = {
-    morning: form.morning.checked,
-    lunch: form.lunch.checked,
-    mid: form.mid.checked,
-    supper: form.supper.checked
-  };
+  const section = document.createElement("div");
+  section.className = "day-section";
 
-  // Enforce Lunch and Supper as required
-  if (!meals.lunch || !meals.supper) {
-    alert("Make sure you've confirmed both Lunch and Supper ✅");
-    return;
-  }
+  const heading = document.createElement("h2");
+  heading.textContent = `${dayName} (${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()})`;
+  section.appendChild(heading);
 
-  localStorage.setItem(days[currentDayIndex], JSON.stringify(meals));
-  alert("Meals saved for " + days[currentDayIndex]);
-}
+  const meals = ["Breakfast", "Lunch", "Supper"];
+  meals.forEach(meal => {
+    const mealDiv = document.createElement("div");
+    mealDiv.className = "meal-entry";
 
-function loadMeals() {
-  const form = document.getElementById("mealForm");
-  const saved = JSON.parse(localStorage.getItem(days[currentDayIndex])) || {};
-  form.morning.checked = saved.morning || false;
-  form.lunch.checked = saved.lunch || false;
-  form.mid.checked = saved.mid || false;
-  form.supper.checked = saved.supper || false;
-  document.getElementById("currentDay").textContent = days[currentDayIndex];
-}
+    const label = document.createElement("label");
+    label.textContent = `${meal}:`;
+    mealDiv.appendChild(label);
 
-function exportMeals() {
-  let output = "My Weekly Meal Tracker\n\n";
-  days.forEach(day => {
-    const meals = JSON.parse(localStorage.getItem(day));
-    output += `📅 ${day}\n`;
-    if (meals) {
-      output += ` - Morning: ${meals.morning ? "✅" : "❌"}\n`;
-      output += ` - Lunch: ${meals.lunch ? "✅" : "❌"}\n`;
-      output += ` - Mid-Afternoon: ${meals.mid ? "✅" : "❌"}\n`;
-      output += ` - Supper: ${meals.supper ? "✅" : "❌"}\n\n`;
-    } else {
-      output += " - No data\n\n";
-    }
+    const select = document.createElement("select");
+    select.innerHTML = `
+      <option value="">-- Did you eat? --</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    `;
+    mealDiv.appendChild(select);
+
+    const costInput = document.createElement("input");
+    costInput.type = "number";
+    costInput.placeholder = "Meal Cost (KES)";
+    costInput.min = 0;
+    mealDiv.appendChild(costInput);
+
+    section.appendChild(mealDiv);
   });
 
-  const blob = new Blob([output], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "meal_log.txt";
-  a.click();
+  container.appendChild(section);
 }
