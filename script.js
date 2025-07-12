@@ -11,7 +11,7 @@ document.getElementById("addDayBtn").addEventListener("click", () => {
 });
 
 document.getElementById("exportBtn").addEventListener("click", () => {
-  const element = document.querySelector(".container");
+  const element = document.getElementById("exportArea");
   html2pdf().from(element).save(`meal_log_${new Date().toISOString()}.pdf`);
 });
 
@@ -26,6 +26,7 @@ function addDaySection(dayName) {
   section.appendChild(heading);
 
   const meals = ["Breakfast", "Lunch", "Supper"];
+
   meals.forEach(meal => {
     const mealDiv = document.createElement("div");
     mealDiv.className = "meal-entry";
@@ -48,8 +49,44 @@ function addDaySection(dayName) {
     costInput.min = 0;
     mealDiv.appendChild(costInput);
 
+    costInput.addEventListener("input", updateTotalCost);
+
     section.appendChild(mealDiv);
   });
 
+  // Daily total line
+  const dayTotal = document.createElement("p");
+  dayTotal.className = "daily-total";
+  dayTotal.style.fontWeight = "bold";
+  dayTotal.style.marginTop = "10px";
+  dayTotal.textContent = `Day Total: KES 0.00`;
+  section.appendChild(dayTotal);
+
   container.appendChild(section);
+}
+
+function updateTotalCost() {
+  const allDaySections = document.querySelectorAll(".day-section");
+  let weeklyTotal = 0;
+
+  allDaySections.forEach(section => {
+    const inputs = section.querySelectorAll("input[type='number']");
+    let dailyTotal = 0;
+
+    inputs.forEach(input => {
+      const value = parseFloat(input.value);
+      if (!isNaN(value)) {
+        dailyTotal += value;
+      }
+    });
+
+    const dayTotalElem = section.querySelector(".daily-total");
+    if (dayTotalElem) {
+      dayTotalElem.textContent = `Day Total: KES ${dailyTotal.toFixed(2)}`;
+    }
+
+    weeklyTotal += dailyTotal;
+  });
+
+  document.getElementById("totalCost").textContent = `Total Weekly Cost: KES ${weeklyTotal.toFixed(2)}`;
 }
