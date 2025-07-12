@@ -143,27 +143,3 @@
     async function downloadPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-
-      doc.setFontSize(16);
-      doc.text("Weekly Meal Report", 20, 20);
-      doc.setFontSize(12);
-      let y = 30;
-
-      let total = 0;
-
-      logs.forEach((entry, i) => {
-        const line = `${i + 1}. ${entry.day} - ${entry.meal} | Ksh ${entry.cost} | Time: ${entry.time}`;
-        doc.text(line, 20, y);
-        y += 10;
-        total += parseFloat(entry.cost);
-      });
-
-      doc.text(`Total Cost: Ksh ${total}`, 20, y + 10);
-      const filename = `Meal_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-
-      // Save with Chrome download prompt
-      doc.save(filename);
-    }
-  </script>
-</body>
-</html>
