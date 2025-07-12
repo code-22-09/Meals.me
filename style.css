@@ -1,60 +1,82 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #d7e1ec, #f8f8f8);
   margin: 0;
   padding: 0;
-  background: #f0f0f0;
 }
 
 .container {
   max-width: 900px;
   margin: auto;
-  padding: 20px;
-  background: #fff;
-  min-height: 100vh;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 30px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 h1 {
   text-align: center;
+  color: #2c3e50;
+  font-size: 2em;
   margin-bottom: 20px;
 }
 
 button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 10px 18px;
   margin: 10px 5px;
-  padding: 10px 20px;
+  border-radius: 6px;
   font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #388e3c;
 }
 
 .day-section {
-  margin-top: 20px;
-  padding: 15px;
+  margin-top: 25px;
+  padding: 20px;
   background: #e8f5e9;
-  border-left: 5px solid #4caf50;
+  border-left: 6px solid #4caf50;
+  border-radius: 8px;
 }
 
 .day-section h2 {
   margin-top: 0;
+  color: #333;
 }
 
 .meal-entry {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 label {
   font-weight: bold;
+  margin-bottom: 4px;
 }
 
 input, select {
-  padding: 6px;
-  margin-top: 5px;
-  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
-.meal-confirmation {
-  margin-top: 10px;
+#totalCost {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 30px;
+  font-weight: bold;
+  color: #2e7d32;
 }
 
 @media print {
